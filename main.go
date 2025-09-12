@@ -1,23 +1,26 @@
 package main
 
 import (
-	"log"
-	"os"
+	"go/goRoutine/config"
+	"go/goRoutine/controller"
 
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 )
 
+func init() {
+	config.LoadEnvVariable()
+	config.DbConnection()
+}
+
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
+
 	router := gin.Default()
 	router.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
-			"message": "Hello",
+			"message": "hello world",
 		})
 	})
-	router.Run(":" + os.Getenv("PORT"))
+	router.POST("/register", controller.RegisterUser)
+	router.POST("/login", controller.Login)
+	router.Run()
 }

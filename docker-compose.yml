@@ -1,9 +1,12 @@
 services:
   database:
-   image: postgres:16-alpine
-   environment:
-     POSTGRES_USER: user
-     POSTGRES_PASSWORD: password
-     POSTGRES_DB: mydb
-     PORT: 5432
+    container_name: g-database
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: mydb
+
     

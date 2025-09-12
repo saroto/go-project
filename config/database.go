@@ -1,21 +1,27 @@
 package config
 
 import (
-	"database/sql"
 	"fmt"
+	"log"
+	"os"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-func DbConnection() *gorm.DB {
-	sqlDB, err := sql.Open("pgx", "mydb_dsn")
-	if err != nil {
-		fmt.Printf("Error database connection: ", err)
-	}
-	gormDB, err := gorm.Open(postgres.New(postgres.Config{
-		Conn: sqlDB,
-	}), &gorm.Config{})
+var DB *gorm.DB
 
-	return gormDB
+func DbConnection() {
+	host := os.Getenv("DB_HOST")
+	user := os.Getenv("DB_USER")
+	password := os.Getenv("DB_PASSWORD")
+	dbName := os.Getenv("DB_NAME")
+	port := os.Getenv("DB_PORT")
+	var err error
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Shanghai", host, user, password, dbName, port)
+	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	if err != nil {
+		log.Fatal("Failed to connect to database", err)
+	}
+
 }

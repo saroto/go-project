@@ -3,6 +3,7 @@ package main
 import (
 	"go/goRoutine/config"
 	"go/goRoutine/controller"
+	"go/goRoutine/middleware"
 
 	"github.com/gin-gonic/gin"
 )
@@ -20,7 +21,14 @@ func main() {
 			"message": "hello world",
 		})
 	})
-	router.POST("/register", controller.RegisterUser)
-	router.POST("/login", controller.Login)
+	api := router.Group("/api")
+	api.POST("/register", controller.RegisterUser)
+	api.POST("/login", controller.Login)
+	authRouter := api.Group("/auth", middleware.AuthMiddleware())
+	authRouter.GET("/ping", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "pong",
+		})
+	})
 	router.Run()
 }

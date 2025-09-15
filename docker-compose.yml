@@ -1,6 +1,6 @@
 services:
   database:
-    container_name: g-database
+    container_name: go-database
     image: postgres:16-alpine
     ports:
       - "5432:5432"

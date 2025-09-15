@@ -6,6 +6,7 @@ import (
 	"go/goRoutine/models"
 	"go/goRoutine/types"
 	"log"
+	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -39,19 +40,9 @@ func RegisterUser(c *gin.Context) {
 		c.JSON(500, gin.H{"message": "Failed to register the user", "err": err.Error()})
 		return
 	}
-	token, err := auth.IssuseToken(int(post.ID), post.Email, post.Name)
-	if err != nil {
-		c.JSON(500, gin.H{"message": "Failed to create token"})
-		return
-	}
-	data := types.UserRegisterResponse{
-		Name:  post.Name,
-		Email: post.Email,
-		Token: token,
-	}
+
 	c.JSON(200, gin.H{
-		"message": "Successfully Register",
-		"data":    data,
+		"message": "Successfully Register, Please Login!",
 	})
 }
 
@@ -67,17 +58,24 @@ func Login(c *gin.Context) {
 	}
 	if err := config.DB.Select("id", "email", "password").Where("email = ?", reqBody.Email).First(&user).Error; err != nil {
 		c.JSON(500, gin.H{
-			"message": "Email is not found",
+			"message": "Invalid email or password",
 		})
 		return
 	}
 	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(reqBody.Password))
-
 	if err != nil {
-		c.JSON(400, gin.H{
-			"message": "Password is not found",
-		})
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid email or password"})
 		return
 	}
+	token, err := auth.IssuseToken(int(user.ID), user.Email, user.Name)
+	if err != nil {
+		c.JSON(500, gin.H{"message": "Failed to create token"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "User successfully login",
+		"token":   token,
+	})
 
 }

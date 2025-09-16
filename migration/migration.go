@@ -11,5 +11,5 @@ func init() {
 }
 
 func main() {
-	config.DB.AutoMigrate(&models.Post{}, &models.User{}, &models.Token{})
+	config.DB.AutoMigrate(&models.Post{}, &models.User{}, &models.Token{}, &models.Otp{})
 }

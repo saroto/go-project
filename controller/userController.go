@@ -43,6 +43,7 @@ func RegisterUser(c *gin.Context) {
 
 	c.JSON(200, gin.H{
 		"message": "Successfully Register, Please Login!",
+		"data":    post,
 	})
 }
 

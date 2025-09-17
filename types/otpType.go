@@ -6,5 +6,6 @@ type OTPReqBody struct {
 }
 
 type VerifyOtpCode struct {
-	OtpCode int64
+	UserId  int64  `json:"user_id"`
+	OtpCode string `json:"otp_code"`
 }

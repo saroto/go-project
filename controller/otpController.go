@@ -46,10 +46,21 @@ func RequestOtpCode(c *gin.Context) {
 
 func VerifyOtpCode(c *gin.Context) {
 	var otpModel models.Otp
-	var reqBody types.OTPReqBody
+	var reqBody types.VerifyOtpCode
 
 	if err := c.BindJSON(&reqBody); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "All fields are require"})
 		return
 	}
+
+	if err := config.DB.Where("user_id = ? AND otp_code =?", reqBody.UserId, reqBody.OtpCode).First(&otpModel).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid OTP code"})
+		return
+	}
+	if time.Now().After(otpModel.ExpiresAt) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "OTP code has expired"})
+		return
+	}
+	config.DB.Delete(&otpModel)
+	c.JSON(http.StatusOK, gin.H{"message": "OTP code verified successfully"})
 }

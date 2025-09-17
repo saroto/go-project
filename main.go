@@ -25,6 +25,7 @@ func main() {
 	api.POST("/register", controller.RegisterUser)
 	api.POST("/login", controller.Login)
 	api.POST("/otp", controller.RequestOtpCode)
+	api.POST("/verify-otp", controller.VerifyOtpCode)
 	authRouter := api.Group("/auth", middleware.AuthMiddleware())
 	authRouter.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
